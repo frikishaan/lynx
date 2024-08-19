@@ -58,7 +58,11 @@ class LinkResource extends Resource
                             ->label('Short URL')
                             ->prefix('bit.ly/')
                             ->helperText('Leave blank to generate automatically.')
+                            ->regex('/^[a-zA-Z0-9-_]+$/')
                             ->unique('links', 'short_id', ignoreRecord: true)
+                            ->validationMessages([
+                                'unique' => 'The link already exist on this domain.',
+                            ])
                             ->disabled(fn(?Link $record) => $record != null)
                     ])
                     ->columns(2),
@@ -96,8 +100,12 @@ class LinkResource extends Resource
                         Tab::make('Security')
                             ->icon('heroicon-o-shield-exclamation')
                             ->schema([
+                                Placeholder::make('description')
+                                    ->content('If enabled, user will be prompted to enter password before redirecting.')
+                                    ->hiddenLabel(true)
+                                    ->columnSpanFull(),
                                 Toggle::make('is_password_protected')
-                                    ->label('Password protect')
+                                    ->label('Enable password protection')
                                     ->live()
                                     ->loadingIndicator('is_password_protected'),
                                 TextInput::make('password')
@@ -105,19 +113,23 @@ class LinkResource extends Resource
                                     ->revealable()
                                     ->visible(fn (Get $get): bool => $get('is_password_protected'))
                                     ->required(fn (Get $get): bool => $get('is_password_protected'))
-                                    ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
                                     ->columnStart(1)
                             ])
                             ->columns(2),
                         Tab::make('Expiration')
                             ->icon('heroicon-o-calendar')
                             ->schema([
+                                Placeholder::make('description')
+                                    ->content('Set an expiration date to automatically deactivate your link after a specified time.')
+                                    ->hiddenLabel(true)
+                                    ->columnSpanFull(),
                                 Toggle::make('has_expiry')
                                     ->label('Has expiry date?')
                                     ->dehydrated(false)
+                                    ->default(fn(Get $get): bool => $get('expires_at') != null)
                                     ->live(),
                                 DateTimePicker::make('expires_at')
-                                    ->minDate(now())
+                                    ->minDate(now('Asia/Kolkata'))
                                     ->timezone('Asia/Kolkata')
                                     ->visible(fn (Get $get): bool => $get('has_expiry'))
                                     ->required(fn (Get $get): bool => $get('has_expiry'))
@@ -131,7 +143,6 @@ class LinkResource extends Resource
                             ])
                             ->columns(2)
                     ])
-                    // ->contained(false)
                     ->columnSpanFull(),
             ]);
     }

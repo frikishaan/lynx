@@ -6,6 +6,7 @@ use App\Actions\GenerateShortId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\URL;
 
 class Link extends Model
 {
@@ -13,10 +14,17 @@ class Link extends Model
 
     protected $guarded = [];
 
-    public function casts(): array
+    protected $hidden = [
+        'password'
+    ];
+
+    protected function casts(): array
     {
         return [
-            'is_expired' => 'bool'
+            'is_expired' => 'boolean',
+            'password' => 'hashed',
+            'expires_at' => 'datetime',
+            'delete_after_expired' => 'boolean'
         ];
     }
 
@@ -35,5 +43,16 @@ class Link extends Model
     public function visits(): HasMany
     {
         return $this->hasMany(Visit::class);
+    }
+
+    public function getRedirectUrl(): string
+    {
+        return URL::query($this->long_url, [
+            "utm_source" => $this->utm_source,
+            "utm_medium" => $this->utm_medium,
+            "utm_content" => $this->utm_content,
+            "utm_term" => $this->utm_term,
+            "utm_campaign" => $this->utm_campaign
+        ]);
     }
 }

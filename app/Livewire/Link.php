@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Link as LinkModel;
+use App\Models\Visit;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -37,23 +38,21 @@ class Link extends Component implements HasForms
 
     public function create(): void
     {
-        $link = LinkModel::select('short_id', 'password', 'long_url')
-            ->where('short_id', $this->short_id)
+        $link = LinkModel::where('short_id', $this->short_id)
             ->firstOrFail();
 
         if(Hash::check($this->form->getState()['password'], $link->password))
-        {
-            $this->redirect($link->long_url);
-            // dd('true');
+        {            
+            $link->visits()->save(new Visit([
+                'ip' => request()->ip()
+            ]));
+
+            $this->redirect($link->getRedirectUrl());
         }
         else
         {
-            // dd('false');
-            dd('error');
+            $this->addError('data.password', 'Incorrect password.');
         }
-        
-        // dd($this->short_id);
-        // dd($this->form->getState());
     }
     
     public function render()
