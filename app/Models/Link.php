@@ -40,9 +40,19 @@ class Link extends Model
         });
     }
 
+    public function choices(): HasMany
+    {
+        return $this->hasMany(LinkChoice::class);
+    }
+    
     public function visits(): HasMany
     {
         return $this->hasMany(Visit::class);
+    }
+
+    public function isExpired(): bool
+    {
+        return $this->expires_at ? $this->expires_at < now() : false;
     }
 
     public function getRedirectUrl(): string

@@ -9,6 +9,7 @@ use App\Models\Link;
 use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Tabs\Tab;
@@ -97,6 +98,26 @@ class LinkResource extends Resource
                                     ->visible(fn (Get $get): bool => $get('has_utm_params'))
                             ])
                             ->columns(3),
+                        Tab::make('Choices')
+                            ->icon('heroicon-o-list-bullet')
+                            ->schema([
+                                Repeater::make('choices')
+                                    ->hiddenLabel()
+                                    ->relationship()
+                                    ->schema([
+                                        TextInput::make('title')
+                                            ->maxLength(255),
+                                        TextInput::make('destination_url')
+                                            ->url()
+                                    ])
+                                    ->orderColumn('sort_order')
+                                    ->reorderableWithButtons()
+                                    ->collapsible()
+                                    ->cloneable()
+                                    ->addActionLabel('Add choice')
+                                    ->defaultItems(2)
+                                    ->grid(2)
+                            ]),
                         Tab::make('Security')
                             ->icon('heroicon-o-shield-exclamation')
                             ->schema([

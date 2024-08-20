@@ -12,14 +12,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('visits', function (Blueprint $table) {
+        Schema::create('link_choices', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Link::class)->constrained()->cascadeOnDelete();
-            $table->string('ip')->nullable();
-            $table->string('country')->nullable();
-            $table->string('browser')->nullable();
-            $table->string('device')->nullable();
-            $table->timestamp('visited_at')->useCurrent();
+            $table->string('destination_url');
+            $table->string('title')->nullable();
+            $table->text('description')->nullable();
+            $table->text('image')->nullable();
+            $table->integer('sort_order')->default(0);  
+            $table->timestamps();
         });
     }
 
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('visits');
+        Schema::dropIfExists('link_choices');
     }
 };
