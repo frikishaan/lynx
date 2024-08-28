@@ -8,17 +8,20 @@ use Illuminate\Http\Request;
 
 class LinkController
 {
-    public function redirect(Request $request, string $short_id)
+    public function redirect(Request $request, string $shortId)
     {
-        $link = Link::where('short_id', $short_id)->firstOrFail();
+        /**  @var \App\Models\Link $link */
+        $link = Link::where('short_id', $shortId)
+            ->withCount("choices")
+            ->firstOrFail();
 
         if($link->isExpired()) {
             return abort(404); // TODO: Create a custom 404 page instead
         }
 
-        if($link->password)
+        if($link->isPasswordProtected() || $link->hasChoices())
         {
-            return view('link', [ 'short_id' => $short_id ]);
+            return view('link', [ 'shortId' => $shortId ]);
         }
         
         $link->visits()->save(new Visit([

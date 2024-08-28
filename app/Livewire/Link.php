@@ -8,20 +8,43 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Hash;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Link extends Component implements HasForms
 {
     use InteractsWithForms;
 
+    private LinkModel $link;
+
+    #[Locked]
+    public string $shortId;
+
     public ?array $data = [];
 
-    public string $short_id = '';
+    private bool $showPasswordForm = false;
+    
+    private bool $showChoices = false;
+
+    public function boot(): void
+    {
+        $this->link = LinkModel::where('short_id', $this->shortId)
+            ->firstOrFail();
+
+        if($this->link->isPasswordProtected())
+        {
+            $this->showPasswordForm = true;
+        }
+        else if($this->link->hasChoices())
+        {
+            $this->showChoices = true;
+        }
+    }
     
     public function mount(): void
     {
-        $this->short_id = request()->route('short_id');
         $this->form->fill();
     }
 
@@ -36,27 +59,50 @@ class Link extends Component implements HasForms
             ->statePath('data');
     }
 
-    public function create(): void
+    public function validatePassword(): void
     {
-        $link = LinkModel::where('short_id', $this->short_id)
-            ->firstOrFail();
-
-        if(Hash::check($this->form->getState()['password'], $link->password))
-        {            
-            $link->visits()->save(new Visit([
-                'ip' => request()->ip()
-            ]));
-
-            $this->redirect($link->getRedirectUrl());
+        if(Hash::check($this->form->getState()['password'], $this->link->password))
+        {
+            if($this->link->hasChoices())
+            {
+                $this->showPasswordForm = false;
+                $this->showChoices = true;
+                $this->link->load('choices');
+            }
+            else {
+                $this->link->visits()->save(new Visit([
+                    'ip' => request()->ip()
+                ]));
+    
+                // $this->redirect($this->link->getRedirectUrl());
+                redirect()->away($this->link->getRedirectUrl());
+            }
         }
         else
         {
+            $this->form->fill();
             $this->addError('data.password', 'Incorrect password.');
         }
     }
-    
-    public function render()
+
+    private function getLinkChoices(): mixed
     {
-        return view('livewire.link');
+        return $this->link->choices();
+    }
+
+    public function visit(int $choiceId)
+    {
+        $this->link->visits()->save(new Visit([
+            'ip' => request()->ip(),
+            'choice_id' => $choiceId
+        ]));
+    }
+    
+    public function render(): View
+    {
+        return view('livewire.link', [
+            'showPasswordForm' => $this->showPasswordForm,
+            'showChoices' => $this->showChoices
+        ]);
     }
 }

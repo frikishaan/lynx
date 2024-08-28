@@ -11,4 +11,4 @@ Route::get('/', function () {
 //     return view('links.password-protected');
 // });
 
-Route::get('/{short_id}', [LinkController::class, 'redirect']);
+Route::get('/{shortId}', [LinkController::class, 'redirect']);

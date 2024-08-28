@@ -55,6 +55,20 @@ class Link extends Model
         return $this->expires_at ? $this->expires_at < now() : false;
     }
 
+    public function isPasswordProtected(): bool
+    {
+        return (bool) $this->password;
+    }
+
+    public function hasChoices(): bool
+    {
+        if (! isset($this->choices_count)) {
+            $this->loadCount("choices");
+        }
+
+        return (bool) $this->choices_count > 0;
+    }
+
     public function getRedirectUrl(): string
     {
         return URL::query($this->long_url, [

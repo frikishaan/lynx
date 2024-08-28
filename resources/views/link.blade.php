@@ -1,3 +1,3 @@
 <x-guest-layout>
-    @livewire('link')
+    @livewire('link', ['shortId' => $shortId])
 </x-guest-layout>

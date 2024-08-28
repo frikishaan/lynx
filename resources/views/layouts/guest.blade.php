@@ -25,21 +25,21 @@
         
         <!-- Main Content -->
         <main class="flex-grow">
-            <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 flex items-center justify-center">
                 {{ $slot }}
             </div>
         </main>
 
+        <!-- Footer -->
+        <footer>
+            <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                <p class="text-center text-gray-500 text-sm">
+                    Powered by Lynx
+                </p>
+            </div>
+        </footer>
     </div>
         
-    <!-- Footer -->
-    <footer class="bg-white shadow">
-        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-            <p class="text-center text-gray-500 text-sm">
-                Powered by Lynx.
-            </p>
-        </div>
-    </footer>
 
     @filamentScripts
     @vite('resources/js/app.js')
