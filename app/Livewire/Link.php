@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Link as LinkModel;
+use App\Models\LinkChoice;
 use App\Models\Visit;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -10,17 +11,13 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Hash;
-use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Link extends Component implements HasForms
 {
     use InteractsWithForms;
 
-    private LinkModel $link;
-
-    #[Locked]
-    public string $shortId;
+    public LinkModel $link;
 
     public ?array $data = [];
 
@@ -30,9 +27,6 @@ class Link extends Component implements HasForms
 
     public function boot(): void
     {
-        $this->link = LinkModel::where('short_id', $this->shortId)
-            ->firstOrFail();
-
         if($this->link->isPasswordProtected())
         {
             $this->showPasswordForm = true;
@@ -73,8 +67,7 @@ class Link extends Component implements HasForms
                 $this->link->visits()->save(new Visit([
                     'ip' => request()->ip()
                 ]));
-    
-                // $this->redirect($this->link->getRedirectUrl());
+
                 redirect()->away($this->link->getRedirectUrl());
             }
         }
@@ -85,17 +78,17 @@ class Link extends Component implements HasForms
         }
     }
 
-    private function getLinkChoices(): mixed
-    {
-        return $this->link->choices();
-    }
-
     public function visit(int $choiceId)
-    {
-        $this->link->visits()->save(new Visit([
+    {       
+        /** @var App\Models\LinkChoice */
+        $choice = $this->link->choices()->where('id', $choiceId)->first();
+
+        $choice->visits()->save(new Visit([
             'ip' => request()->ip(),
-            'choice_id' => $choiceId
+            'link_id' => $choice->link_id,
         ]));
+
+        redirect()->away($choice->destination_url);
     }
     
     public function render(): View

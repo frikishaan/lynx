@@ -18,4 +18,9 @@ class Visit extends Model
     {
         return $this->belongsTo(Link::class);
     }
+
+    public function linkChoice(): BelongsTo
+    {
+        return $this->belongsTo(LinkChoice::class);
+    }
 }

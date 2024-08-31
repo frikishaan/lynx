@@ -18,8 +18,7 @@ return new class extends Migration
             $table->string('destination_url');
             $table->string('title')->nullable();
             $table->text('description')->nullable();
-            $table->text('image')->nullable();
-            $table->integer('sort_order')->default(0);  
+            $table->integer('sort_order')->default(0);
             $table->timestamps();
         });
     }

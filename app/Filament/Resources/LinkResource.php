@@ -8,11 +8,13 @@ use App\Filament\Resources\LinkResource\RelationManagers;
 use App\Models\Link;
 use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Tabs\Tab;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -101,14 +103,26 @@ class LinkResource extends Resource
                         Tab::make('Choices')
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
+                                FileUpload::make('choice_page_image')
+                                    ->imageEditor()
+                                    ->maxSize(1024 * 1024 * 5),
+                                TextInput::make('choice_page_title')
+                                    ->label('Title')
+                                    ->helperText('Give a title to the choice page'),
+                                Textarea::make('choice_page_description')
+                                    ->label('Description')
+                                    ->helperText('Give a short description to the choice page'),
                                 Repeater::make('choices')
                                     ->hiddenLabel()
                                     ->relationship()
                                     ->schema([
                                         TextInput::make('title')
+                                            ->required()
                                             ->maxLength(255),
                                         TextInput::make('destination_url')
                                             ->url()
+                                            ->required(),
+                                        Textarea::make('description')
                                     ])
                                     ->orderColumn('sort_order')
                                     ->reorderableWithButtons()

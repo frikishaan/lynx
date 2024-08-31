@@ -31,9 +31,10 @@ return new class extends Migration
             $table->string('utm_term')->nullable();
             $table->string('utm_content')->nullable();
 
+            $table->text('choice_page_image')->nullable();
             $table->string('choice_page_title')->nullable();
-            $table->string('choice_page_logo')->nullable();
-            $table->string('choice_page_call_to_action')->nullable();
+            $table->text('choice_page_description')->nullable();
+            $table->tinyInteger('enable_dark_mode')->default(0);
 
             $table->timestamps();
         });

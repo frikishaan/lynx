@@ -21,7 +21,7 @@ class LinkController
 
         if($link->isPasswordProtected() || $link->hasChoices())
         {
-            return view('link', [ 'shortId' => $shortId ]);
+            return view('link', [ 'link' => $link ]);
         }
         
         $link->visits()->save(new Visit([
