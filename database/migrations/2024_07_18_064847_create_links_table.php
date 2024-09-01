@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Domain;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,6 +15,7 @@ return new class extends Migration
         Schema::create('links', function (Blueprint $table) {
             $table->id();
             $table->string('short_id')->unique();
+            $table->foreignIdFor(Domain::class)->nullable()->constrained()->nullOnDelete();
             $table->string('long_url');
             $table->string('title')->nullable();
             $table->text('description')->nullable();

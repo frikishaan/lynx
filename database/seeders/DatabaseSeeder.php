@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
         ]);
 
+        // Domain::
+
         // with UTM
         Link::create([
             'long_url' => 'https://filamentphp.com/docs/3.x/forms/fields/repeater',
