@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('domains', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->tinyInteger('is_verified');
+            $table->tinyInteger('is_verified')->default(0);
             $table->timestamps();
         });
     }
