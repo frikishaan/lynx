@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Actions\GenerateShortId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\URL;
 
@@ -38,6 +39,11 @@ class Link extends Model
                 $model->short_id = (new GenerateShortId)->execute();
             }
         });
+    }
+
+    public function domain(): BelongsTo
+    {
+        return $this->belongsTo(Domain::class);
     }
 
     public function choices(): HasMany

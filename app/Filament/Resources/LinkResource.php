@@ -12,6 +12,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\Textarea;
@@ -57,6 +58,9 @@ class LinkResource extends Resource
                             }),
                         TextInput::make('title')
                             ->loadingIndicator('long_url'),
+                        Select::make('domain_id')
+                            ->relationship('domain', 'name')
+                            ->hidden(fn () => \App\Models\Domain::count() == 0),
                         TextInput::make('short_id')
                             ->label('Short URL')
                             ->prefix('bit.ly/')

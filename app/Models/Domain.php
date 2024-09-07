@@ -10,6 +10,8 @@ class Domain extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name'];
+
     public function links(): HasMany
     {
         return $this->hasMany(Link::class);
