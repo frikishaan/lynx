@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LinkController;
+use App\Http\Middleware\CustomDomain;
 use Illuminate\Support\Facades\Route;
 
 Route::domain(config('app.url'))->group(function () {
@@ -8,7 +9,6 @@ Route::domain(config('app.url'))->group(function () {
         return redirect('app/login');
     });
 });
-Route::get('/test', function() {
-    return request()->getHost();
-});
-Route::get('/{shortId}', [LinkController::class, 'redirect']);
+
+Route::get('/{shortId}', LinkController::class)
+    ->middleware(CustomDomain::class);

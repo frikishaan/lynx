@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Actions\GetTitleFromURL;
 use App\Filament\Resources\LinkResource\Pages;
 use App\Filament\Resources\LinkResource\RelationManagers;
+use App\Models\Domain;
 use App\Models\Link;
 use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
@@ -31,9 +32,11 @@ use Filament\Tables\Columns\TextColumn\TextColumnSize;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\HtmlString;
+use Illuminate\Validation\Rules\Unique;
 
 class LinkResource extends Resource
 {
@@ -59,17 +62,53 @@ class LinkResource extends Resource
                         TextInput::make('title')
                             ->loadingIndicator('long_url'),
                         Select::make('domain_id')
-                            ->relationship('domain', 'name')
-                            ->hidden(fn () => \App\Models\Domain::count() == 0),
+                            ->options(
+                                Arr::prepend(
+                                    Domain::all()
+                                        ->pluck("name", "id")
+                                        ->toArray(),
+                                    app_domain(),
+                                    -1
+                                )                                
+                            )
+                            ->dehydrateStateUsing(fn (int $state): int|null => 
+                                    $state > 0 ? $state : null
+                            )
+                            ->hidden(fn () => Domain::count() == 0)
+                            ->required(fn () => Domain::count() > 0)
+                            ->disabled(fn(?Link $record) => $record != null)
+                            ->live(onBlur: true),
                         TextInput::make('short_id')
                             ->label('Short URL')
-                            ->prefix('bit.ly/')
+                            ->prefix(function (Get $get): string { 
+
+                                if(empty($get('domain_id')) || $get('domain_id') < 0)
+                                {
+                                    return app_domain() . '/';
+                                } 
+                                
+                                return str(
+                                    Domain::select("name")
+                                        ->findOrFail($get('domain_id'))
+                                        ->name
+                                    )
+                                    ->append('/')
+                                    ->value;
+                            })
                             ->helperText('Leave blank to generate automatically.')
-                            ->regex('/^[a-zA-Z0-9-_]+$/')
-                            ->unique('links', 'short_id', ignoreRecord: true)
+                            ->regex('/^[a-zA-Z0-9-_]+$/') // Should be according to config
+                            ->unique(
+                                table: 'links', 
+                                column: 'short_id', 
+                                ignoreRecord: true,
+                                modifyRuleUsing: function (Unique $rule, Get $get) {
+                                    return $rule->where('domain_id', $get('domain_id'));
+                                }
+                            )
                             ->validationMessages([
                                 'unique' => 'The link already exist on this domain.',
                             ])
+                            ->loadingIndicator('domain_id')
                             ->disabled(fn(?Link $record) => $record != null)
                     ])
                     ->columns(2),
@@ -133,7 +172,7 @@ class LinkResource extends Resource
                                     ->collapsible()
                                     ->cloneable()
                                     ->addActionLabel('Add choice')
-                                    ->defaultItems(2)
+                                    ->defaultItems(0)
                                     ->grid(2)
                             ]),
                         Tab::make('Security')

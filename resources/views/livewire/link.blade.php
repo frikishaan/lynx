@@ -1,6 +1,4 @@
 <div>
-    <button type="button" wire:click="$refresh">Refresh</button>
-
     @if($this->showPasswordForm)
         <x-filament::section class="max-w-2xl mx-auto">
             <x-slot name="heading">

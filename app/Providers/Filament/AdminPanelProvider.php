@@ -24,12 +24,14 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('lynx-app')
-            // ->domain(config('app.url'))
+            ->domain(config('app.url'))
             ->path('app')
             ->login()
             ->colors([
                 'primary' => Color::Orange,
             ])
+            ->brandLogo(asset('images/logo.png'))
+            ->favicon(asset('images/favicon.png'))
             ->topNavigation()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

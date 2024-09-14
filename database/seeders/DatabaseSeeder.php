@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Domain;
 use App\Models\Link;
 use App\Models\LinkChoice;
 use App\Models\User;
@@ -24,7 +25,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
         ]);
 
-        // Domain::
+        // Domain
+        Domain::create([
+            'name' => 'lynx1.test'
+        ]);
+
+        Domain::create([
+            'name' => 'lynx2.test'
+        ]);
 
         // with UTM
         Link::create([
