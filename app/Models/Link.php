@@ -41,6 +41,11 @@ class Link extends Model
         });
     }
 
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(Team::class);
+    }
+
     public function domain(): BelongsTo
     {
         return $this->belongsTo(Domain::class);

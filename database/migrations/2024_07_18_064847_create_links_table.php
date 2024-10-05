@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Domain;
+use App\Models\Team;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -37,6 +38,8 @@ return new class extends Migration
             $table->string('choice_page_title')->nullable();
             $table->text('choice_page_description')->nullable();
             $table->tinyInteger('enable_dark_mode')->default(0);
+
+            $table->foreignIdFor(Team::class)->constrained()->cascadeOnDelete();
 
             $table->timestamps();
 
