@@ -67,7 +67,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
 
     public function currentTeam(): ?Team
     {
-        return Filament::getTenant() ?? null;
+        return Filament::getTenant();
     }
 
     public function role(): Role

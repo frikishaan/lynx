@@ -129,6 +129,7 @@ class DatabaseSeeder extends Seeder
 
         $marketingTeam->members()->attach([
             $admin->id => [ 'role' => 'admin'], 
+            $user->id => [ 'role' => 'user' ],
             $user2->id => [ 'role' => 'user' ]
         ]);
 

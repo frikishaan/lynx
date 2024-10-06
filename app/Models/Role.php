@@ -30,6 +30,7 @@ class Role extends Model
                 'permissions' => json_encode([
                     'team:View',
                     'team:viewAny',
+                    'team:create',
                     'team:update',
                     'team:delete',
                     'link:view',

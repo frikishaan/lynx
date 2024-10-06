@@ -2,14 +2,10 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Tenancy\EditTeamProfile;
-use App\Filament\Resources\TeamResource\Pages\EditTeam;
 use App\Models\Team;
-use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -33,12 +29,6 @@ class AdminPanelProvider extends PanelProvider
             ->path('app')
             ->login()
             ->tenant(Team::class)
-            ->tenantMenuItems([
-                // 'profile' => MenuItem::make()
-                //     ->label('Edit team profile')
-                //     ->url(fn() => EditTeam::getUrl([ 'record' => Filament::getTenant() ])),
-            ])
-            // ->tenantProfile(EditTeamProfile::class)
             ->colors([
                 'primary' => Color::Orange,
             ])

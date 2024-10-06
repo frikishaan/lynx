@@ -22,7 +22,7 @@ class TeamResource extends Resource
 
     protected static ?string $model = Team::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     public static function form(Form $form): Form
     {
@@ -38,6 +38,11 @@ class TeamResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('created_at')
+                    ->date('d/m/Y')
+                    ->sortable()
             ])
             ->filters([
                 //
