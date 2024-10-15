@@ -6,6 +6,7 @@ use App\Filament\Resources\DomainResource\Pages;
 use App\Filament\Resources\DomainResource\RelationManagers;
 use App\Models\Domain;
 use Filament\Forms;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,6 +16,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\HtmlString;
 
 class DomainResource extends Resource
 {
@@ -28,6 +30,14 @@ class DomainResource extends Resource
     {
         return $form
             ->schema([
+                Placeholder::make('info')
+                    ->content(new HtmlString('
+                        <div class="bg-orange-400">
+                            Please update your DNS settings to point your custom domain to this server. Set the A record to this server\'s IP and, if needed, configure the CNAME for proper routing. This ensures your domain will function correctly.
+                        </div>
+                    '))
+                    ->hiddenLabel(true)
+                    ->columnSpanFull(),
                 TextInput::make('name')
                     ->label('Domain name')
                     ->required()
@@ -39,14 +49,8 @@ class DomainResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name'),
-                IconColumn::make('is_verified')
-                    ->label('Verification status')
-                    ->trueIcon('heroicon-o-check-badge')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->trueColor('success')
-                    ->falseColor('danger'),
                 TextColumn::make('created_at')
-                    ->date('d-m-Y')
+                    ->date('Y-m-d H:m:s')
             ])
             ->filters([
                 //

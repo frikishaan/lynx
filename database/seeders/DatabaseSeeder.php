@@ -44,7 +44,6 @@ class DatabaseSeeder extends Seeder
         $defaultTeam->domains()->saveMany([
             new Domain([
                 'name' => 'lynx1.test',
-                'is_verified' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ]),

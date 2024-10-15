@@ -41,7 +41,11 @@ class TeamResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('created_at')
-                    ->date('d/m/Y')
+                    ->date('Y-m-d H:m:s')
+                    ->sortable(),
+                TextColumn::make('updated_at')
+                    ->label('Last modifed at')
+                    ->date('Y-m-d H:m:s')
                     ->sortable()
             ])
             ->filters([
