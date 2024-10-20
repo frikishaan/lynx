@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Domain;
 use App\Models\Link;
 use App\Models\LinkChoice;
+use App\Models\Team;
 use App\Models\User;
 use App\Models\Visit;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -18,20 +19,39 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
+        $admin = User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@example.com',
         ]);
 
-        // Domain
-        Domain::create([
-            'name' => 'lynx1.test'
+        $user = User::factory()->create([
+            'name' => 'Normal user',
+            'email' => 'user@example.com'
         ]);
 
-        Domain::create([
-            'name' => 'lynx2.test'
+        // default team
+        /** @var Team */
+        $defaultTeam = Team::create([
+            'name' => "Default Team",
+            'user_id' => $admin->id,
+        ]);
+
+        $defaultTeam->members()->attach([
+            $admin->id => [ 'role' => 'admin'], 
+            $user->id => [ 'role' => 'user' ]
+        ]);
+
+        $defaultTeam->domains()->saveMany([
+            new Domain([
+                'name' => 'lynx1.test',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]),
+            new Domain([
+                'name' => 'lynx2.test',
+                'created_at' => now(),
+                'updated_at' => now()
+            ])
         ]);
 
         // with UTM
@@ -43,7 +63,8 @@ class DatabaseSeeder extends Seeder
             'utm_medium' => 'marketing-website',
             'utm_campaign' => 'marketing-01',
             'utm_term' => '',
-            'utm_content' => 'referral'
+            'utm_content' => 'referral',
+            'team_id' => $defaultTeam->id
         ])
         ->visits()
         ->saveMany([
@@ -61,7 +82,8 @@ class DatabaseSeeder extends Seeder
         Link::create([
             'long_url' => 'https://filamentphp.com/docs/3.x/support/blade-components/loading-indicator',
             'title' => 'Loading indicator Blade component - Core Concepts - Filament',
-            'password' => Hash::make('password')
+            'password' => Hash::make('password'),
+            'team_id' => $defaultTeam->id
         ]);
 
         // With choices
@@ -70,7 +92,8 @@ class DatabaseSeeder extends Seeder
             'title' => 'The wealth of nations by Adam Smith',
             'choice_page_title' => 'Buy The wealth of nations by Adam Smith',
             'choice_page_description' => 'Discover the groundbreaking ideas and principles of modern economics in The Wealth of Nations by Adam Smith. This seminal work examines the wealth creation process, the division of labor, and the market forces that shape economies, laying the foundation for the study of capitalism.',
-            'enable_dark_mode' => 1
+            'enable_dark_mode' => 1,
+            'team_id' => $defaultTeam->id
         ])
         ->choices()
         ->saveMany([
@@ -93,6 +116,26 @@ class DatabaseSeeder extends Seeder
                 'description' => 'For residents of UK, buy from Amazon\'s UK store.',
                 'sort_order' => 3
             ])
+        ]);
+
+        /** @var Team */
+        $marketingTeam = Team::create([
+            'name' => 'Marketing team',
+            'user_id' => $admin->id
+        ]);
+
+        $user2 = User::factory()->create();
+
+        $marketingTeam->members()->attach([
+            $admin->id => [ 'role' => 'admin'], 
+            $user->id => [ 'role' => 'user' ],
+            $user2->id => [ 'role' => 'user' ]
+        ]);
+
+        Link::create([
+            'long_url' => 'https://laravel.com/docs/11.x/helpers',
+            'title' => 'Helpers - Laravel',
+            'team_id' => $marketingTeam->id
         ]);
     }
 }

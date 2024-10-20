@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Team;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('domains', function (Blueprint $table) {
+        Schema::create('teams', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-
-            $table->foreignIdFor(Team::class)->constrained()->cascadeOnDelete();
-            
+            $table->foreignId('user_id')->index();
+            $table->string('name');
+            $table->tinyInteger('default_team')->default(0);
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('domains');
+        Schema::dropIfExists('teams');
     }
 };

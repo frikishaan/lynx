@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "calebporzio/sushi": "^2.5",
         "filament/filament": "^3.2",
         "hidehalo/nanoid-php": "^1.1",
         "laravel/framework": "^11.9",

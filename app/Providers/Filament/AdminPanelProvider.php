@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Models\Team;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -27,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->domain(config('app.url'))
             ->path('app')
             ->login()
+            ->tenant(Team::class)
             ->colors([
                 'primary' => Color::Orange,
             ])

@@ -2,44 +2,33 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DomainResource\Pages;
-use App\Filament\Resources\DomainResource\RelationManagers;
-use App\Models\Domain;
+use App\Filament\Resources\TeamResource\Pages;
+use App\Filament\Resources\TeamResource\RelationManagers;
+use App\Filament\Resources\TeamResource\RelationManagers\MembersRelationManager;
+use App\Models\Team;
 use Filament\Forms;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\HtmlString;
 
-class DomainResource extends Resource
+class TeamResource extends Resource
 {
-    protected static ?string $model = Domain::class;
+    protected static bool $isScopedToTenant = false;
 
-    protected static ?string $navigationIcon = 'heroicon-o-globe-alt';
+    protected static ?string $model = Team::class;
 
-    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Placeholder::make('info')
-                    ->content(new HtmlString('
-                        <div class="bg-orange-400">
-                            Please update your DNS settings to point your custom domain to this server. Set the A record to this server\'s IP and, if needed, configure the CNAME for proper routing. This ensures your domain will function correctly.
-                        </div>
-                    '))
-                    ->hiddenLabel(true)
-                    ->columnSpanFull(),
                 TextInput::make('name')
-                    ->label('Domain name')
                     ->required()
             ]);
     }
@@ -48,16 +37,22 @@ class DomainResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name'),
+                TextColumn::make('name')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->date('Y-m-d H:m:s')
+                    ->sortable(),
+                TextColumn::make('updated_at')
+                    ->label('Last modifed at')
+                    ->date('Y-m-d H:m:s')
+                    ->sortable()
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -66,10 +61,19 @@ class DomainResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            MembersRelationManager::class
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageDomains::route('/'),
+            'index' => Pages\ListTeams::route('/'),
+            'create' => Pages\CreateTeam::route('/create'),
+            'edit' => Pages\EditTeam::route('/{record}/edit'),
         ];
     }
 }
