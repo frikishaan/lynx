@@ -8,6 +8,8 @@ use App\Filament\Resources\LinkResource\RelationManagers;
 use App\Models\Domain;
 use App\Models\Link;
 use Filament\Forms;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
@@ -22,8 +24,10 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Infolists\Components\IconEntry;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Columns\Layout\Stack;
@@ -62,6 +66,7 @@ class LinkResource extends Resource
                         TextInput::make('title')
                             ->loadingIndicator('long_url'),
                         Select::make('domain_id')
+                            ->label('Domain')
                             ->options(
                                 Arr::prepend(
                                     Domain::all()
@@ -74,7 +79,14 @@ class LinkResource extends Resource
                             ->dehydrateStateUsing(fn (int $state): int|null => 
                                     $state > 0 ? $state : null
                             )
-                            ->hidden(fn () => Domain::count() == 0)
+                            ->hidden(function (string $operation) {
+
+                                if($operation != 'create') {
+                                    return true;
+                                }
+
+                                return Domain::count() == 0;
+                            })
                             ->required(fn () => Domain::count() > 0)
                             ->disabled(fn(?Link $record) => $record != null)
                             ->live(onBlur: true),
@@ -110,6 +122,16 @@ class LinkResource extends Resource
                             ])
                             ->loadingIndicator('domain_id')
                             ->disabled(fn(?Link $record) => $record != null)
+                            ->hidden(fn(?Link $record) => $record != null),
+                        TextInput::make('short_url')
+                            ->label('Short URL')
+                            ->dehydrated(false)
+                            ->afterStateHydrated(function (TextInput $component, ?string $state, ?Link $link) {
+                                $component->state($link->getShortURL());
+                            })
+                            // ->suffixIcon('heroicon-o-clipboard')
+                            ->disabled()
+                            ->hidden(fn(string $operation) => $operation == 'create')
                     ])
                     ->columns(2),
                 Tabs::make()
@@ -179,19 +201,92 @@ class LinkResource extends Resource
                             ->icon('heroicon-o-shield-exclamation')
                             ->schema([
                                 Placeholder::make('description')
-                                    ->content('If enabled, user will be prompted to enter password before redirecting.')
+                                    ->content(function(?Link $link) {
+                                        if($link->isPasswordProtected()) {
+                                            return  new HtmlString(view('components.password-enabled-label'));
+                                        }
+                                        
+                                        return new HtmlString('If enabled, user will be prompted to enter password before redirecting.'); 
+                                    })
                                     ->hiddenLabel(true)
                                     ->columnSpanFull(),
                                 Toggle::make('is_password_protected')
                                     ->label('Enable password protection')
+                                    ->dehydrated(false)
+                                    // ->afterStateHydrated(function (Toggle $component, ?string $state, ?Link $link) {
+                                    //     $component->state($link->isPasswordProtected());
+                                    // })
                                     ->live()
-                                    ->loadingIndicator('is_password_protected'),
+                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('password', ''))
+                                    ->loadingIndicator('is_password_protected')
+                                    ->hidden(function (string $operation, ?Link $record): bool {
+                                        if($operation == 'edit' && $record->isPasswordProtected()) {
+                                            return true;
+                                        }
+
+                                        return false;
+                                    }),
                                 TextInput::make('password')
                                     ->password()
                                     ->revealable()
-                                    ->visible(fn (Get $get): bool => $get('is_password_protected'))
-                                    ->required(fn (Get $get): bool => $get('is_password_protected'))
-                                    ->columnStart(1)
+                                    // ->helperText(function (string $operation): string {
+                                    //     if($operation == 'edit') {
+                                    //         return __('Leave empty to keep the current password');
+                                    //     }
+
+                                    //     return '';
+                                    // })
+                                    ->hidden(function (string $operation, ?Link $record, Get $get): bool {
+                                        if($operation == 'edit' && $record->isPasswordProtected()) {
+                                            return true;
+                                        }
+
+                                        return ! $get('is_password_protected');
+                                    })
+                                    ->required(function (string $operation, Get $get): bool {
+                                        // if($operation == 'edit') 
+                                        // {
+                                        //     return $get('is_password_protected') && $get('password');
+                                        // }
+
+                                        return $get('is_password_protected');
+                                    })
+                                    ->columnStart(1),
+                                Actions::make([
+                                    Action::make('reset_password')
+                                        ->label('Reset password')
+                                        ->form([
+                                            TextInput::make('password')
+                                                ->password()
+                                                ->revealable()
+                                                ->required()
+                                        ])
+                                        ->modalWidth(MaxWidth::Large)
+                                        ->action(function(array $data, Link $record) {
+                                            $record->password = $data['password'];
+                                            $record->save();
+                                        }),
+                                    Action::make('remove_password')
+                                        ->label('Remove password')
+                                        ->requiresConfirmation()
+                                        ->color('danger')
+                                        ->modalIcon('heroicon-o-shield-exclamation')
+                                        ->modalHeading('Remove password')
+                                        ->modalDescription('Are you sure you\'d like to remove password protection from this link? Anyone can access the target link if you remove the password.')
+                                        ->action(function(Link $record) {
+                                            $record->password = null;
+                                            $record->save();
+                                        })
+                                ])
+                                ->hidden(function (string $operation, ?Link $link): bool {
+                                    if($operation == 'create') 
+                                    {
+                                        return true;
+                                    }
+
+                                    return ! isset($link->password);
+                                })
+                                ->columnStart(1)
                             ])
                             ->columns(2),
                         Tab::make('Expiration')

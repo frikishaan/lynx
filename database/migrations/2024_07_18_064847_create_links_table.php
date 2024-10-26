@@ -21,12 +21,14 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->text('description')->nullable();
             
-            $table->tinyInteger('is_password_protected')->default(0);
+            // Password protection
             $table->string('password')->nullable();
             
+            // Expiry
             $table->dateTime('expires_at')->nullable();
             $table->tinyInteger('delete_after_expired')->default(0);
             
+            // UTM Parameters
             $table->tinyInteger('has_utm_params')->default(0);
             $table->string('utm_source')->nullable();
             $table->string('utm_medium')->nullable();
@@ -34,6 +36,7 @@ return new class extends Migration
             $table->string('utm_term')->nullable();
             $table->string('utm_content')->nullable();
 
+            // choice page
             $table->text('choice_page_image')->nullable();
             $table->string('choice_page_title')->nullable();
             $table->text('choice_page_description')->nullable();

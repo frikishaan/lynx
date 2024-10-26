@@ -61,6 +61,24 @@ class Link extends Model
         return $this->hasMany(Visit::class);
     }
 
+    public function getDomainName(): string
+    {
+        if(! isset($this->domain)) {
+            $this->load('domain:name');
+        }
+
+        if($this->domain == null) {
+            return config('app.url');
+        }
+
+        return $this->domain->name;
+    }
+
+    public function getShortURL(): string
+    {
+        return implode('/', [$this->getDomainName(), $this->short_id]);
+    }
+
     public function isExpired(): bool
     {
         return $this->expires_at ? $this->expires_at < now() : false;
