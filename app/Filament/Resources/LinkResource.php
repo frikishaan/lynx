@@ -24,7 +24,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Infolists\Components\IconEntry;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\MaxWidth;
@@ -37,8 +36,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\Rules\Unique;
 
@@ -129,7 +126,6 @@ class LinkResource extends Resource
                             ->afterStateHydrated(function (TextInput $component, ?string $state, ?Link $link) {
                                 $component->state($link->getShortURL());
                             })
-                            // ->suffixIcon('heroicon-o-clipboard')
                             ->disabled()
                             ->hidden(fn(string $operation) => $operation == 'create')
                     ])
@@ -213,9 +209,6 @@ class LinkResource extends Resource
                                 Toggle::make('is_password_protected')
                                     ->label('Enable password protection')
                                     ->dehydrated(false)
-                                    // ->afterStateHydrated(function (Toggle $component, ?string $state, ?Link $link) {
-                                    //     $component->state($link->isPasswordProtected());
-                                    // })
                                     ->live()
                                     ->afterStateUpdated(fn (Set $set, ?string $state) => $set('password', ''))
                                     ->loadingIndicator('is_password_protected')
@@ -229,13 +222,6 @@ class LinkResource extends Resource
                                 TextInput::make('password')
                                     ->password()
                                     ->revealable()
-                                    // ->helperText(function (string $operation): string {
-                                    //     if($operation == 'edit') {
-                                    //         return __('Leave empty to keep the current password');
-                                    //     }
-
-                                    //     return '';
-                                    // })
                                     ->hidden(function (string $operation, ?Link $record, Get $get): bool {
                                         if($operation == 'edit' && $record->isPasswordProtected()) {
                                             return true;
@@ -243,14 +229,7 @@ class LinkResource extends Resource
 
                                         return ! $get('is_password_protected');
                                     })
-                                    ->required(function (string $operation, Get $get): bool {
-                                        // if($operation == 'edit') 
-                                        // {
-                                        //     return $get('is_password_protected') && $get('password');
-                                        // }
-
-                                        return $get('is_password_protected');
-                                    })
+                                    ->required(fn (Get $get): bool =>  $get('is_password_protected'))
                                     ->columnStart(1),
                                 Actions::make([
                                     Action::make('reset_password')
