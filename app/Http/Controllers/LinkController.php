@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ProcessClick;
 use App\Models\Link;
-use App\Models\Visit;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -33,9 +33,7 @@ class LinkController
             return view('link', [ 'link' => $link ]);
         }
         
-        $link->visits()->save(new Visit([
-            'ip' => $request->ip()
-        ])); // dispatch a job instead
+        ProcessClick::dispatch($link);
 
         return redirect()->away($link->getRedirectUrl());
     }
