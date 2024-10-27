@@ -278,17 +278,26 @@ class LinkResource extends Resource
                                 Toggle::make('has_expiry')
                                     ->label('Has expiry date?')
                                     ->dehydrated(false)
-                                    ->default(fn(Get $get): bool => $get('expires_at') != null)
+                                    ->afterStateHydrated(function (Toggle $component, ?Link $link) {
+                                        if($link->expires_at != null) {
+                                            $component->state(true);
+                                        }
+
+                                        return false;
+                                    })
                                     ->live(),
                                 DateTimePicker::make('expires_at')
-                                    ->minDate(now('Asia/Kolkata'))
-                                    ->timezone('Asia/Kolkata')
-                                    ->visible(fn (Get $get): bool => $get('has_expiry'))
+                                    ->minDate(now(config('lynx.timezone')))
+                                    ->timezone(config('lynx.timezone'))
+                                    ->helperText(
+                                        new HtmlString('Datetime displayed in <b>' . config('lynx.timezone') . '</b> timezone')
+                                    )
+                                    ->visible(fn (Get $get): bool => (bool) $get('has_expiry'))
                                     ->required(fn (Get $get): bool => $get('has_expiry'))
                                     ->columnStart(1),
                                 Toggle::make('delete_after_expired')
                                     ->label('Delete after expired')
-                                    ->visible(fn (Get $get): bool => $get('has_expiry'))
+                                    ->visible(fn (Get $get): bool => (bool) $get('has_expiry'))
                                     ->onIcon('heroicon-o-trash')
                                     ->onColor('danger')
                                     ->inline(false)
