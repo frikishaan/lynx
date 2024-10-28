@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Actions\GetTitleFromURL;
 use App\Filament\Resources\LinkResource\Pages;
 use App\Filament\Resources\LinkResource\RelationManagers;
+use App\Forms\Components\QRCode;
 use App\Models\Domain;
 use App\Models\Link;
 use Filament\Forms;
@@ -21,6 +22,7 @@ use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ViewField;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -285,12 +287,18 @@ class LinkResource extends Resource
 
                                         return false;
                                     })
+                                    ->afterStateUpdated(function (?string $state, ?string $old, Set $set) {
+                                        if($old == '1' && $state == null) {
+                                            $set('expires_at', '');
+                                            $set('delete_after_expired', '');
+                                        }
+                                    })
                                     ->live(),
                                 DateTimePicker::make('expires_at')
                                     ->minDate(now(config('lynx.timezone')))
                                     ->timezone(config('lynx.timezone'))
                                     ->helperText(
-                                        new HtmlString('Datetime displayed in <b>' . config('lynx.timezone') . '</b> timezone')
+                                        new HtmlString('Date & time displayed in <b>' . config('lynx.timezone') . '</b> timezone')
                                     )
                                     ->visible(fn (Get $get): bool => (bool) $get('has_expiry'))
                                     ->required(fn (Get $get): bool => $get('has_expiry'))
@@ -302,7 +310,15 @@ class LinkResource extends Resource
                                     ->onColor('danger')
                                     ->inline(false)
                             ])
-                            ->columns(2)
+                            ->columns(2),
+
+                        Tab::make('QR Code')
+                            ->icon('heroicon-o-qr-code')
+                            ->schema([
+                                QRCode::make('qr_code')
+                                    ->url(fn(?Link $link): string => $link->getShortUrl())
+                            ])
+                            ->visible(fn(string $operation): bool => $operation == 'edit')
                     ])
                     ->columnSpanFull(),
             ]);
