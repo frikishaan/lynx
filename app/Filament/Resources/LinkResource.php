@@ -316,7 +316,26 @@ class LinkResource extends Resource
                             ->icon('heroicon-o-qr-code')
                             ->schema([
                                 QRCode::make('qr_code')
-                                    ->url(fn(?Link $link): string => $link->getShortUrl())
+                                    ->url(fn(?Link $link): string => $link->getShortUrl()),
+                                Actions::make([
+                                    Action::make('download_qr_code')
+                                        ->label('Download QR Code')
+                                        ->icon('heroicon-o-arrow-down-tray')
+                                        ->action(function(Link $link) {
+                                            return response()->streamDownload(
+                                                function () use($link): void {
+                                                    echo \SimpleSoftwareIO\QrCode\Facades\QrCode::format("png")
+                                                        ->margin(2)
+                                                        ->size(512)
+                                                        ->merge('/public/images/qr-logo.png')
+                                                        ->errorCorrection('M')
+                                                        ->generate($link->getShortURL());
+                                                },
+                                                'qr-code.png',
+                                                ['Content-Type' => 'image/png']
+                                            );
+                                        })
+                                ])
                             ])
                             ->visible(fn(string $operation): bool => $operation == 'edit')
                     ])

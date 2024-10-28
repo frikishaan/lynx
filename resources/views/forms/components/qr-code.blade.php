@@ -2,13 +2,23 @@
     :component="$getFieldWrapperView()"
     :field="$field"
 >
+    @php
+        $url = $getUrl();    
+    @endphp
+    
     <div x-data="{ state: $wire.$entangle('{{ $getStatePath() }}') }">
-        <!-- Interact with the `state` property in Alpine.js -->
 
-        {{-- <div class="visible-print text-center"> --}}
-            {!! QrCode::size(250)->generate($getUrl()); !!}
-            {{-- <p>Scan me to return to the original page.</p> --}}
-        {{-- </div> --}}
+        <img 
+            src="data:image/png;base64,{!! base64_encode(
+                QrCode::format('png')
+                    ->margin(2)
+                    ->size(250)
+                    ->merge('/public/images/qr-logo.png')
+                    ->errorCorrection('M')
+                    ->generate($url)
+            ) !!}" 
+            alt="{{ $url }}"
+        />
 
     </div>
 </x-dynamic-component>
