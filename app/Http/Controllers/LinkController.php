@@ -33,7 +33,7 @@ class LinkController
             return view('link', [ 'link' => $link ]);
         }
         
-        ProcessClick::dispatch($link);
+        ProcessClick::dispatch($link, request()->userAgent(), request()->getClientIp());
 
         return redirect()->away($link->getRedirectUrl());
     }

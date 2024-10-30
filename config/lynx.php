@@ -30,6 +30,15 @@ return [
 
     'short_id_size' => 8,
     
+    /*
+    |--------------------------------------------------------------------------
+    | Show 'Powered By Lynx' text in the footer
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify whether you want to show the footer text at the 
+    | bottom of the page.
+    |
+    */
     'render_lynx_footer' => true,
 
     /*
@@ -39,9 +48,23 @@ return [
     |
     | Here you may specify the timezone for your application UI.
     | Date and time will displayed on the UI in this timezone.
+    | See - https://www.php.net/manual/en/timezones.php
     |
     */
 
-    'timezone' => 'Asia/Kolkata'
+    'timezone' => 'Asia/Kolkata',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Geo Location Action
+    |--------------------------------------------------------------------------
+    |
+    | This is a action which Lynx use to fetch the geo location data from IP
+    | address. Currently we have a built-in action which used 
+    | FreeIPAPI (https://freeipapi.com/). However, you can create your own 
+    | action which extends the \App\Abstracts\BaseLocationAction class.
+    |
+    */
+    'location_action' => \App\Actions\FreeIPAPILocationAction::class
 
 ];
