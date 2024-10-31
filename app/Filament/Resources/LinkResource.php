@@ -316,7 +316,8 @@ class LinkResource extends Resource
                             ->icon('heroicon-o-qr-code')
                             ->schema([
                                 QRCode::make('qr_code')
-                                    ->url(fn(?Link $link): string => $link->getShortUrl()),
+                                    ->url(fn(?Link $link): string => $link->getShortUrl())
+                                    ->dehydrated(false),
                                 Actions::make([
                                     Action::make('download_qr_code')
                                         ->label('Download QR Code')
@@ -353,11 +354,11 @@ class LinkResource extends Resource
                         ->searchable(),
                     TextColumn::make('short_id')
                         ->formatStateUsing(
-                            fn (string $state): string => config('lynx.domain') ."/{$state}"
+                            fn (string $state): string => config('app.url') ."/{$state}"
                         )
                         ->copyable()
                         ->copyableState(
-                            fn (string $state): string => config('lynx.domain') ."/{$state}"
+                            fn (string $state): string => config('app.url') ."/{$state}"
                         ),
                     Grid::make()
                         ->schema([
