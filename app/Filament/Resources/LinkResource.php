@@ -34,6 +34,7 @@ use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextColumn\TextColumnSize;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -391,6 +392,20 @@ class LinkResource extends Resource
                 'all',
             ])
             ->defaultSort('created_at', 'desc')
+            ->filters([
+                TernaryFilter::make('expired')
+                    ->label('Expired links')
+                    ->queries(
+                        true: fn ($query) => $query,
+                        false: fn ($query) => $query->onlyExpired(),
+                        blank: fn($query) => 
+                            $query->where('expires_at', '>', now())
+                                ->orWhere('expires_at', null)
+                    )
+                    ->placeholder('Without expired')
+                    ->trueLabel('With expired')
+                    ->falseLabel('Only expired')
+            ])
             ->actions([
                 Tables\Actions\Action::make('visit')
                     ->label('Visit link')

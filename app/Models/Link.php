@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Actions\GenerateShortId;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -59,6 +60,16 @@ class Link extends Model
     public function visits(): HasMany
     {
         return $this->hasMany(Visit::class);
+    }
+
+    public function scopeWithExpired(Builder $query): void
+    {
+        $query->orWhere('expires_at', '<', now());
+    }
+
+    public function scopeOnlyExpired(Builder $query): void
+    {
+        $query->where('expires_at', '<', now());
     }
 
     public function getDomainName(): string
