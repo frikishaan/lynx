@@ -355,11 +355,23 @@ class LinkResource extends Resource
                         ->searchable(),
                     TextColumn::make('short_id')
                         ->formatStateUsing(
-                            fn (string $state): string => config('app.url') ."/{$state}"
+                            function (string $state, Link $link): string {
+                                if($link->domain) {
+                                    return $link->domain->name . "/{$state}";
+                                }
+
+                                return app_domain() . "/{$state}";
+                            }
                         )
                         ->copyable()
                         ->copyableState(
-                            fn (string $state): string => config('app.url') ."/{$state}"
+                            function (string $state, Link $link): string {
+                                if($link->domain) {
+                                    return $link->domain->name . "/{$state}";
+                                }
+
+                                return app_domain() . "/{$state}";
+                            }
                         ),
                     Grid::make()
                         ->schema([
@@ -381,6 +393,7 @@ class LinkResource extends Resource
                         ->columns(2)
                 ])
             ])
+            ->recordUrl(null)
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3

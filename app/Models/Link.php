@@ -20,6 +20,13 @@ class Link extends Model
         'password'
     ];
 
+    /**
+     * The relationships that should always be loaded.
+     *
+     * @var array
+     */
+    protected $with = ['domain'];
+
     protected function casts(): array
     {
         return [
