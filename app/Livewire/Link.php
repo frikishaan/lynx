@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Jobs\ProcessClick;
 use App\Models\Link as LinkModel;
 use App\Models\LinkChoice;
 use App\Models\Visit;
@@ -64,10 +65,8 @@ class Link extends Component implements HasForms
                 $this->link->load('choices');
             }
             else {
-                $this->link->visits()->save(new Visit([
-                    'ip' => request()->ip()
-                ]));
-
+                ProcessClick::dispatch($this->link, request()->userAgent(), request()->getClientIp());
+                
                 redirect()->away($this->link->getRedirectUrl());
             }
         }
@@ -83,10 +82,7 @@ class Link extends Component implements HasForms
         /** @var App\Models\LinkChoice */
         $choice = $this->link->choices()->where('id', $choiceId)->first();
 
-        $choice->visits()->save(new Visit([
-            'ip' => request()->ip(),
-            'link_id' => $choice->link_id,
-        ]));
+        ProcessClick::dispatch($this->link, request()->userAgent(), request()->getClientIp(), $choiceId);
 
         redirect()->away($choice->destination_url);
     }

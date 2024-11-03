@@ -21,7 +21,8 @@ class ProcessClick implements ShouldQueue
     public function __construct(
         public Link $link,
         public string $userAgent,
-        public string $ip
+        public string $ip,
+        public int | null $choiceId = null
     )
     { }
 
@@ -39,11 +40,12 @@ class ProcessClick implements ShouldQueue
         }
 
         $this->link->visits()->save(new Visit([
+            'link_choice_id' => $this->choiceId,
             'ip' => $this->ip,
             'country' => $this->getCountry(),
-            'device' => $dd->getDeviceName(),
+            'device' => ucfirst($dd->getDeviceName()),
             'browser' => optional($dd->getClient())['name'],
-            // 'os' => optional($dd->getOs())['name']
+            'os' => optional($dd->getOs())['name']
         ]));
     }
 
