@@ -59,7 +59,9 @@ class MembersRelationManager extends RelationManager
                     ->multiple()
                     ->form(fn (AttachAction $action): array => [
                         $action->getRecordSelect(),
-                        Forms\Components\TextInput::make('role')->required(),
+                        Select::make('role')
+                        ->options(Role::all()->pluck('name', 'key'))
+                        ->required()
                     ]),
                 Tables\Actions\CreateAction::make(),
             ])
