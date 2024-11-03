@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('country')->nullable();
             $table->string('browser')->nullable();
             $table->string('device')->nullable();
+            $table->string('os')->nullable();
             $table->timestamp('visited_at')->useCurrent();
         });
     }
