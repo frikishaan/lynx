@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // with UTM
-        Link::create([
+        $link = Link::create([
             'long_url' => 'https://filamentphp.com/docs/3.x/forms/fields/repeater',
             'title' => 'Repeater - Form Builder - Filament',
             'has_utm_params' => 1,
@@ -65,21 +65,10 @@ class DatabaseSeeder extends Seeder
             'utm_term' => '',
             'utm_content' => 'referral',
             'team_id' => $defaultTeam->id
-        ])
-        ->visits()
-        ->saveMany([
-            new Visit([
-                'ip' => '137.105.96.102',
-                'country' => 'India'
-            ]),
-            new Visit([
-                'ip' => '142.23.41.101',
-                'country' => 'USA'
-            ])
         ]);
 
         // with password
-        Link::create([
+        $link2 = Link::create([
             'long_url' => 'https://filamentphp.com/docs/3.x/support/blade-components/loading-indicator',
             'title' => 'Loading indicator Blade component - Core Concepts - Filament',
             'password' => Hash::make('password'),
@@ -87,7 +76,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // With choices
-        Link::create([
+        $link3 = Link::create([
             'long_url' => 'https://www.amazon.in/Wealth-Nations-Adam-Smith/dp/9387779467/',
             'title' => 'The wealth of nations by Adam Smith',
             'choice_page_title' => 'Buy The wealth of nations by Adam Smith',
@@ -118,6 +107,14 @@ class DatabaseSeeder extends Seeder
             ])
         ]);
 
+        // Expired link
+        Link::create([
+            'long_url' => 'https://laravel.com/docs/11.x/',
+            'title' => 'Expired Link',
+            'team_id' => $defaultTeam->id,
+            'expires_at' => now()->subHour()
+        ]);
+
         /** @var Team */
         $marketingTeam = Team::create([
             'name' => 'Marketing team',
@@ -137,5 +134,12 @@ class DatabaseSeeder extends Seeder
             'title' => 'Helpers - Laravel',
             'team_id' => $marketingTeam->id
         ]);
+
+        // Visits
+        $visits = Visit::factory(26784)->make()->toArray();
+        
+        foreach (array_chunk($visits, 1000) as $chunk) {
+            Visit::insert($chunk);
+        }
     }
 }
