@@ -25,7 +25,10 @@ class StatsOverwiew extends BaseWidget
                     Cache::remember(
                         'total_engagements_' . $currentTeam->id, 
                         3600,
-                        fn () => Visit::count()
+                        fn () => Visit::query()
+                            ->join("links", "visits.link_id", "=", "links.id")
+                            ->where("links.team_id", $currentTeam->id)
+                            ->count()
                     )
                 , 1, 2)
             ),
@@ -35,7 +38,11 @@ class StatsOverwiew extends BaseWidget
                     Cache::remember(
                         'engagements_in_last_7_days_' . $currentTeam->id,
                         3600,
-                        fn () => Visit::where('visited_at', '>=', now()->subDays(7))->count()
+                        fn () => Visit::query()
+                            ->join("links", "visits.link_id", "=", "links.id")
+                            ->where("links.team_id", $currentTeam->id)
+                            ->where('visits.visited_at', '>=', now()->subDays(7))
+                            ->count()
                     ), 
                     1, 1
                 )
