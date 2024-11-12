@@ -3,8 +3,10 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Visit;
+use Filament\Facades\Filament;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class VisitByDeviceChart extends ChartWidget
@@ -37,28 +39,36 @@ class VisitByDeviceChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = Visit::query()
-            ->select("device", DB::raw("count(*) as total"))
-            ->when(
-                $this->filter == 'today', 
-                fn(Builder $query) => $query->where('visited_at', '>=', now()->startOfDay())
-            )
-            ->when(
-                $this->filter == 'week', 
-                fn(Builder $query) => $query->where('visited_at', '>=', now()->subWeek())
-            )
-            ->when(
-                $this->filter == 'month', 
-                fn(Builder $query) => $query->where('visited_at', '>=', now()->subDays(30))
-            )
-            ->when(
-                $this->filter == 'year', 
-                fn(Builder $query) => $query->where('visited_at', '>=', now()->startOfYear())
-            )
-            ->groupBy("device")
-            ->orderByDesc("total")
-            ->limit(10)
-            ->get();
+        $currentTeam = Filament::getTenant();
+
+        $data = Cache::remember(
+            'visits_by_device_' . $this->filter . '_' . $currentTeam->id, 
+            3600, 
+            fn () => Visit::query()
+                ->select("device", DB::raw("count(*) as total"))
+                ->when(
+                    $this->filter == 'today', 
+                    fn(Builder $query) => $query->where('visited_at', '>=', now()->startOfDay())
+                )
+                ->when(
+                    $this->filter == 'week', 
+                    fn(Builder $query) => $query->where('visited_at', '>=', now()->subWeek())
+                )
+                ->when(
+                    $this->filter == 'month', 
+                    fn(Builder $query) => $query->where('visited_at', '>=', now()->subDays(30))
+                )
+                ->when(
+                    $this->filter == 'year', 
+                    fn(Builder $query) => $query->where('visited_at', '>=', now()->startOfYear())
+                )
+                ->join("links", "visits.link_id", "=", "links.id")
+                ->where("links.team_id", $currentTeam->id)
+                ->groupBy("device")
+                ->orderByDesc("total")
+                ->limit(10)
+                ->get()
+        );
 
         return [
             'datasets' => [

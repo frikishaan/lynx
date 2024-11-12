@@ -3,8 +3,10 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Visit;
+use Filament\Facades\Filament;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class VisitByBrowser extends ChartWidget
@@ -37,7 +39,12 @@ class VisitByBrowser extends ChartWidget
 
     protected function getData(): array
     {
-        $data = Visit::query()
+        $currentTeam = Filament::getTenant();
+        
+        $data = Cache::remember(
+            'visits_by_browser_' . $this->filter . '_' . $currentTeam->id, 
+            3600,
+            fn () => Visit::query()
             ->select("browser", DB::raw("count(*) as total"))
             ->when(
                 $this->filter == 'today', 
@@ -55,10 +62,13 @@ class VisitByBrowser extends ChartWidget
                 $this->filter == 'year', 
                 fn(Builder $query) => $query->where('visited_at', '>=', now()->startOfYear())
             )
+            ->join("links", "visits.link_id", "=", "links.id")
+            ->where("links.team_id", $currentTeam->id)
             ->groupBy("browser")
             ->orderByDesc("total")
             ->limit(10)
-            ->get();
+            ->get()
+        );
 
         return [
             'datasets' => [
