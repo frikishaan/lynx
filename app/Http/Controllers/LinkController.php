@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\ProcessClick;
 use App\Models\Link;
+use App\Models\Scopes\TeamScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -14,13 +15,18 @@ class LinkController
         $customDomain = $request->get('custom_domain');
 
         /**  @var \App\Models\Link $link */
-        $link = Link::where('short_id', $shortId)
-            ->when($customDomain, function(Builder $query) use ($customDomain) {
-                $query->where('domain_id', $customDomain->id);
-            })
-            ->when(! $customDomain, function(Builder $query) {
-                $query->whereNull('domain_id');
-            })
+        $link = Link::query()
+            ->withoutGlobalScope(TeamScope::class)
+            ->where('short_id', $shortId)
+            ->when(
+                $customDomain, 
+                function(Builder $query) use ($customDomain) {
+                    $query->where('domain_id', $customDomain->id);
+                }, 
+                function(Builder $query) {
+                    $query->whereNull('domain_id');
+                }
+            )
             ->withCount("choices")
             ->firstOrFail();
 
