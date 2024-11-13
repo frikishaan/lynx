@@ -129,6 +129,19 @@ class DatabaseSeeder extends Seeder
             $user2->id => [ 'role' => 'user' ]
         ]);
 
+        $marketingTeam->domains()->saveMany([
+            new Domain([
+                'name' => 'lynx3.test',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]),
+            new Domain([
+                'name' => 'lynx4.test',
+                'created_at' => now(),
+                'updated_at' => now()
+            ])
+        ]);
+
         Link::create([
             'long_url' => 'https://laravel.com/docs/11.x/helpers',
             'title' => 'Helpers - Laravel',
