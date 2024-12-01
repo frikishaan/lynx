@@ -8,7 +8,7 @@ use App\Models\Scopes\TeamScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
-class LinkController
+class RedirectController
 {
     public function __invoke(Request $request, string $shortId)
     {
