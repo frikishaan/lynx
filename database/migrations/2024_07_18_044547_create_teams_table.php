@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->index();
             $table->string('name');
             $table->tinyInteger('default_team')->default(0);
             $table->timestamps();
