@@ -14,6 +14,13 @@ class Team extends Model
 
     protected $withPivot = ['role'];
 
+    public function casts(): array
+    {
+        return [
+            'default_team' => 'boolean'
+        ];
+    }
+
     public function members()
     {
         return $this->belongsToMany(User::class, Membership::class)
