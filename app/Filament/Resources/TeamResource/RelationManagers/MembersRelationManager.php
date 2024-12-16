@@ -53,22 +53,45 @@ class MembersRelationManager extends RelationManager
                 AttachAction::make()
                     ->label('Add exisiting')
                     ->recordSelect(
-                        fn (Select $select) => $select->placeholder('Select user(s)')
+                        fn (Select $select) => $select->placeholder('Search users by name or email')
                     )
                     ->recordSelectSearchColumns(['name', 'email'])
                     ->multiple()
                     ->form(fn (AttachAction $action): array => [
                         $action->getRecordSelect(),
                         Select::make('role')
-                        ->options(Role::all()->pluck('name', 'key'))
-                        ->required()
+                            ->options(Role::all()->pluck('name', 'key'))
+                            ->required()
                     ]),
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                DetachAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                DetachAction::make()
+                    ->modalDescription('Are you sure you\'d like to remove this user from this team?')
+                    ->hidden(function (Model $record) {
+                        if(auth()->user()->id == $record->id) {
+                            return true;
+                        }
+
+                        return false;
+                    }),
+                Tables\Actions\EditAction::make()
+                    ->hidden(function (Model $record) {
+                        if(auth()->user()->id == $record->id) {
+                            return true;
+                        }
+
+                        return false;
+                    }),
+                Tables\Actions\DeleteAction::make()
+                    ->modalDescription('Are you sure you\'d like to delete this user? The user will be removed from the system.')
+                    ->hidden(function (Model $record) {
+                        if(auth()->user()->id == $record->id) {
+                            return true;
+                        }
+
+                        return false;
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
