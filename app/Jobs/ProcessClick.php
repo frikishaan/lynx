@@ -51,8 +51,12 @@ class ProcessClick implements ShouldQueue
 
     private function getCountry(): string | null
     {
-        $action = app(config('lynx.location_action'), ['ip' => $this->ip]);
+        if($actionName = config('lynx.location_action'))
+        {
+            $action = app($actionName, ['ip' => $this->ip]);
+            return $action->getCountry();
+        }
 
-        return $action->getCountry();
+        return null;
     }
 }

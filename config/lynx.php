@@ -65,6 +65,6 @@ return [
     | action which extends the \App\Abstracts\BaseLocationAction class.
     |
     */
-    'location_action' => \App\Actions\FreeIPAPILocationAction::class
+    'location_action' => null // \App\Actions\FreeIPAPILocationAction::class
 
 ];
