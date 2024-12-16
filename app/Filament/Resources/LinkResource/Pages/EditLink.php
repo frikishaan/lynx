@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\LinkResource\Pages;
 
 use App\Filament\Resources\LinkResource;
+use App\Models\Link;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
@@ -15,15 +16,15 @@ class EditLink extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('visit_link')
-            ->outlined()
-            ->label('Visit link')
-            ->icon('heroicon-o-arrow-top-right-on-square')
-            ->size(ActionSize::Small)
-            ->url(fn (): string => config('app.url') . '/' . $this->record->short_id)
-            ->extraAttributes([
-                'target' => '_blank',
-            ]),
+            Action::make('open_link')
+                ->label('Open link')
+                ->icon('heroicon-o-arrow-top-right-on-square')
+                ->outlined()
+                ->size(ActionSize::Small)
+                ->url(fn (Link $link): string => 'http://' . $link->getShortURL())
+                ->extraAttributes([
+                    'target' => '_blank',
+                ]),
             Actions\DeleteAction::make()
         ];
     }
