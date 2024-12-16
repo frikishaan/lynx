@@ -32,8 +32,8 @@ class DatabaseSeeder extends Seeder
         // default team
         /** @var Team */
         $defaultTeam = Team::create([
-            'name' => "Default Team",
-            'user_id' => $admin->id,
+            'name' => 'Default Team',
+            'default_team' => 1
         ]);
 
         $defaultTeam->members()->attach([
@@ -117,8 +117,7 @@ class DatabaseSeeder extends Seeder
 
         /** @var Team */
         $marketingTeam = Team::create([
-            'name' => 'Marketing team',
-            'user_id' => $admin->id
+            'name' => 'Marketing team'
         ]);
 
         $user2 = User::factory()->create();
