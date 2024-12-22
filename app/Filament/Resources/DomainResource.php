@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\DomainResource\Pages;
 use App\Filament\Resources\DomainResource\RelationManagers;
 use App\Models\Domain;
+use App\Rules\Domain as DomainRule;
 use Filament\Forms;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
@@ -41,6 +42,7 @@ class DomainResource extends Resource
                 TextInput::make('name')
                     ->label('Domain name')
                     ->required()
+                    ->rules([new DomainRule()])
             ]);
     }
 
