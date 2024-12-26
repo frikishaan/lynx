@@ -84,15 +84,15 @@ class Link extends Model
 
     public function getDomainName(): string
     {
+        if($this->domain_id == null) {
+            return config('app.url');
+        }
+
         if(! isset($this->domain)) {
             $this->load('domain:name');
         }
 
-        if($this->domain == null) {
-            return config('app.url');
-        }
-
-        return $this->domain->name;
+        return 'http://' . $this->domain->name;
     }
 
     public function getShortURL(): string
