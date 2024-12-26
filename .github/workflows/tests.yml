@@ -47,9 +47,6 @@ jobs:
       - name: Clear Config
         run: php artisan config:clear
 
-      - name: Run Migration
-        run: php artisan migrate -v
-
       - name: Install NPM dependencies
         run: npm install
 
