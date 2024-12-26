@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ["8.1", "8.2"]
+        php-versions: ["8.2", "8.3"]
 
     steps:
       - name: Checkout
@@ -19,7 +19,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: mbstring, dom, fileinfo, pgsql
+          extensions: mbstring, dom, fileinfo, sqlite3
           coverage: xdebug
 
       - name: Get composer cache directory
