@@ -37,6 +37,9 @@ function login()
     Filament::setTenant($defaultTeam);
 }
 
+/**
+ * Function to create a team
+ */
 function createTeam() {
     return Team::create([
         'name' => 'Default team'
