@@ -214,7 +214,6 @@ test('same short code returns different urls for different domains', function ()
         'domain_id' => $domain2->id
     ]);
 
-    // dd($link1->getShortURL());
     $this->get($link1->getShortURL())
         ->assertRedirect($link1->long_url);
 
