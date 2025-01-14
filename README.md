@@ -1,29 +1,33 @@
 <p align="center">
-    <img src="./art/logo.png" width="200" alt="Laravel Logo"></a>
+    <img src="./art/logo.png" width="200" alt="Lynx Logo">
 </p>
-
-> [!CAUTION]
-> Currently in beta.
 
 ## About Lynx
 
 Lynx is a self-hosted link shortner application. It  allows you to shorten, track, and manage links with ease.
 
-**Features**
-- Choice pages
-- Customizable slug
-- Password protected links
-- QR Code
-- Create multiple teams
-- Custom domains
-- Analytics
+It is built with SQLite, making it lightweight, easy to manage, and perfect for projects of any scale. No complex database setup required, it offers a hassle-free way to handle your links while ensuring reliability and performance.
+
+## Features
+
+- **Choice pages** - Create choice pages to allow users to navigate to multiple destinations from a single short URL, offering flexibility and boosting conversions.
+
+- **Customizable slug** -Define meaningful, unique slugs for your short urls like _ac.me/help_ or _ac.me/shop_ etc.
+
+- **Password protected links** - Secure your shortened links with passwords and ensure only authorized users can access the resource.
+
+- **QR Code** - Automatically generate QR codes for every shortened link, simplifying access and sharing.
+
+- **Teams** - Collaborate efficiently by creating teams, allowing shared access and management.
+
+- **Custom domains** - Enhance branding by using multiple custom domains for your short links, providing flexibility and a customized experience for different audiences or campaigns.
+
+- **Analytics** - Gain insights into link performance with detailed analytics, including click counts, geographic data, and device statistics.
 
 ## Requirements
 
-- PHP 8.2
-- Laravel 11.x
-- Filament 3.x
-- Sqlite 
+- PHP >= 8.2
+- Laravel >= 11.x
 
 ## Installing locally
 
@@ -55,10 +59,6 @@ php artisan migrate
 ```bash
 php artisan db:seed
 ```
-
-<!-- ## Security Vulnerabilities
-
-If you discover a security vulnerability within Lynx, please send an e-mail to Ishan via [hey@frikishaan.com](mailto:hey@frikishaan.com). All security vulnerabilities will be promptly addressed. -->
 
 ## License
 
