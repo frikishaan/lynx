@@ -2,6 +2,9 @@
     <img src="./art/logo.png" width="200" alt="Lynx Logo">
 </p>
 
+[![Tests](https://github.com/frikishaan/lynx/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/frikishaan/lynx/actions/workflows/tests.yml)
+
+
 ## About Lynx
 
 Lynx is a self-hosted link shortner application. It  allows you to shorten, track, and manage links with ease.
