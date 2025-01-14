@@ -13,8 +13,6 @@ return [
     */
 
     'allowed_characters' => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-    
-    'domain' => env('APP_URL', ''),
 
     /*
     |--------------------------------------------------------------------------
