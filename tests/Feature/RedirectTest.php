@@ -11,7 +11,6 @@ it('can redirect to original url', function () {
 
     login();
 
-    dump(Filament::getTenant()->id);
     /** @var App\Models\Link */
     $link = Link::create([
         'long_url' => 'https://laravel.com',
