@@ -22,9 +22,7 @@ class EditLink extends EditRecord
                 ->outlined()
                 ->size(ActionSize::Small)
                 ->url(fn (Link $link): string => 'http://' . $link->getShortURL())
-                ->extraAttributes([
-                    'target' => '_blank',
-                ]),
+                ->openUrlInNewTab(true),
             Actions\DeleteAction::make()
         ];
     }
