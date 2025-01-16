@@ -53,14 +53,24 @@ npm run build
 
 ### Run database migrations
 
+Run the database migrations using the following command -
+
 ```bash
 php artisan migrate
 ```
 
-### Optionally, seed the test data
+Optionally, seed the test data into the database using -
 
 ```bash
 php artisan db:seed
+```
+
+### Create account
+
+Use the following command to create a account in the system -
+
+```bash
+php artisan lynx:create-account
 ```
 
 ## License
