@@ -54,12 +54,9 @@ class DomainResource extends Resource
                 TextColumn::make('created_at')
                     ->date('Y-m-d H:m:s')
             ])
-            ->filters([
-                //
-            ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Remove')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
