@@ -42,7 +42,14 @@ class DomainResource extends Resource
                 TextInput::make('name')
                     ->label('Domain name')
                     ->required()
+                    ->unique(
+                        table: Domain::class, 
+                        column: 'name'
+                    )
                     ->rules([new DomainRule()])
+                    ->validationMessages([
+                        'unique' => 'The domain name already exists.',
+                    ])
             ]);
     }
 

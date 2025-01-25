@@ -1,6 +1,8 @@
 <?php
 
 use App\Filament\Resources\DomainResource;
+use App\Models\Domain;
+use Filament\Facades\Filament;
 
 use function Pest\Livewire\livewire;
 
@@ -40,4 +42,21 @@ it('cannot create with invalid domains', function(string $domainName) {
 
 })->with([
     'invalid', '123', 'http://', 'abc@gmail.com'
+]);
+
+it('cannot create with existing domains', function(string $domainName) {
+    Domain::create([
+        'name' => $domainName,
+        'team_id' => Filament::getTenant()->id
+    ]);
+
+    livewire(DomainResource\Pages\ManageDomains::class)
+        ->callAction('create', [
+            'name' => $domainName
+        ])
+        ->assertHasActionErrors([
+            'name' => 'The domain name already exists.' 
+        ]);
+})->with([
+    'ac.me', 'comp.ly', 'sales.io', 'marketing.io', 'doc.ly'
 ]);
