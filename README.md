@@ -73,6 +73,27 @@ Use the following command to create a account in the system -
 php artisan lynx:create-account
 ```
 
+### Background tasks
+
+Lynx handles the click analytics asynchronously using the Laravel's powerful [queue system](https://laravel.com/docs/queues). By offloading analytics to background tasks, Lynx maintains optimal performance for users while managing data processing in the background. To start processing the queue items run the following command - 
+
+```bash
+php artisan queue:work
+```
+Note - For long-running workers in production, ensure you supervise them using a process manager like Supervisor or Laravel Horizon for better reliability.
+
+### Scheduled Jobs
+
+Lynx utilizes Laravel's [task scheduling system](https://laravel.com/docs/scheduling) to handle schduled jobs in the application. 
+
+Currently, Lynx includes a job which deletes the expired links in the system, provided they are marked for deletion. To run the scheduled jobs use the following command - 
+
+```bash
+php artisan schedule:run
+```
+
+For continuous scheduling in production checkout the [Laravel's documentation](https://laravel.com/docs/scheduling#running-the-scheduler).
+
 ## License
 
 [Lynx license](./LICENSE.md)
